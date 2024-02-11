@@ -12,7 +12,7 @@ public class UsuarioService implements UsuarioInputPort {
 
     @Override
     public Usuario findByUsername(String username) {
-        return null;
+        return adapter.findByUsername(username);
     }
 
     @Override

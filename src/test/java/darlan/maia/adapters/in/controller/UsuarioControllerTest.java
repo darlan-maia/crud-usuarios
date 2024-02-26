@@ -1,7 +1,7 @@
 package darlan.maia.adapters.in.controller;
 
-import darlan.maia.adapters.out.exceptions.BusinessException;
-import darlan.maia.adapters.out.exceptions.handler.HandlerOfExceptions;
+import darlan.maia.adapters.out.exception.BusinessException;
+import darlan.maia.adapters.out.exception.handler.HandlerOfExceptions;
 import darlan.maia.domain.model.Telefone;
 import darlan.maia.domain.model.TipoTelefone;
 import darlan.maia.domain.model.Usuario;
@@ -14,7 +14,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -80,11 +82,98 @@ class UsuarioControllerTest {
         mockMvc
                 .perform(MockMvcRequestBuilders.get("/api/v1/joao"))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty())
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.http_status").value("NOT_FOUND"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.mensagem").value("Não foi possível encontrar usuário com username joao"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.mensagem_detalhada").isEmpty())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.validations").isEmpty());
+    }
+
+    @Test
+    @DisplayName("Sucesso - POST/api/v1")
+    void deveSalvarUsuarioComSucesso() throws Exception {
+
+        final String requestBody = """
+                {
+                    "username" : "joao123",
+                    "password" : "12345678",
+                    "first_name" : "João",
+                    "last_name" : "Silva",
+                    "email" : "joao@email.com",
+                    "telefones" : [
+                        {
+                            "numero" : "71999999999",
+                            "tipo" : "CELULAR"
+                        }
+                    ]
+                }
+                """;
+
+        final Usuario usuario = Usuario.builder()
+                .username("joao123")
+                .password("12345678")
+                .firstName("João")
+                .lastName("Silva")
+                .email("joao@email.com")
+                .telefones(List.of(Telefone.builder().numero("71999999999").tipo(TipoTelefone.CELULAR).build()))
+                .build();
+
+        Mockito.when(service.save(Mockito.any(Usuario.class))).thenReturn(usuario);
+
+        final MockHttpServletRequestBuilder toBePerformed = MockMvcRequestBuilders
+                .post("/api/v1")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc
+                .perform(toBePerformed)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.username").value("joao123"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.full_name").value("João Silva"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value("joao@email.com"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.telefones").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.telefones[0].numero").value("71999999999"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.telefones[0].tipo").value("CELULAR"));
+    }
+
+    @Test
+    @DisplayName("Fracasso - Erro de Validação")
+    void deveExibirErroDeValidacao() throws Exception {
+
+        final String requestBody = """
+                {
+                    "password" : "123456",
+                    "first_name" : "João",
+                    "last_name" : "Silva",
+                    "email" : "joao@email.com",
+                    "telefones" : [
+                        {
+                            "numero" : "71999999999",
+                            "tipo" : "CELULAR"
+                        }
+                    ]
+                }
+                """;
+
+        final MockHttpServletRequestBuilder toBePerformed = MockMvcRequestBuilders
+                .post("/api/v1")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc
+                .perform(toBePerformed)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.http_status").value("BAD_REQUEST"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.mensagem").value("Há erros de validação em alguns campos"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.validations").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.validations[0].campo").value("username"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.validations[0].descricao").value("Campo obrigatório"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.validations[1].campo").value("password"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.validations[1].descricao").value("Campo deve conter, no mínimo, oito caracteres"));
     }
 }

@@ -12,4 +12,9 @@ import lombok.NoArgsConstructor;
 public class Telefone {
     private String numero;
     private TipoTelefone tipo;
+
+    @Override
+    public String toString() {
+        return "%s#%s".formatted(numero, tipo.name());
+    }
 }

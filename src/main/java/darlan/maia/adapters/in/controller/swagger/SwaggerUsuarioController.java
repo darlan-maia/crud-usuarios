@@ -1,7 +1,8 @@
 package darlan.maia.adapters.in.controller.swagger;
 
+import darlan.maia.adapters.in.controller.dto.UsuarioRequestDTO;
 import darlan.maia.adapters.in.controller.dto.UsuarioResponseDTO;
-import darlan.maia.adapters.out.exceptions.response.ApiErroResponse;
+import darlan.maia.adapters.out.exception.response.ApiErroResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -44,4 +45,41 @@ public interface SwaggerUsuarioController {
 
     })
     ResponseEntity<UsuarioResponseDTO> findByUsername(@Parameter(in = ParameterIn.PATH) String username);
+
+    @Operation(
+            summary = "Persiste um usuário no banco de dados",
+            description = "Salva um novo usuário."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Busca realizada com sucesso",
+                    content = @Content(schema = @Schema(implementation = UsuarioResponseDTO.class))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Dados do corpo de requisição inconsistentes",
+                    content = {
+                            @Content(
+                                    schema = @Schema(implementation = ApiErroResponse.class),
+                                    examples = @ExampleObject(
+                                            """
+                                            {
+                                                "http_status" : "BAD_REQUEST",
+                                                "mensagem" : "Dados do corpo da requisição são inválidos",
+                                                "mensagem_detalhada" : "<detalhes>",
+                                                "validations" : [
+                                                    {
+                                                        "campo" : "username",
+                                                        "mensagem" : "O campo deve conter, no mínimo, três caracteres"
+                                                    }
+                                                ]
+                                            }
+                                            """
+                                    )
+                            )
+                    }
+            )}
+    )
+    ResponseEntity<UsuarioResponseDTO> save(UsuarioRequestDTO request);
 }

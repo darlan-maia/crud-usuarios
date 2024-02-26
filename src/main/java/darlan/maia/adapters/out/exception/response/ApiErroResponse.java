@@ -1,4 +1,4 @@
-package darlan.maia.adapters.out.exceptions.response;
+package darlan.maia.adapters.out.exception.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;

@@ -101,4 +101,36 @@ class UsuarioPersistenceAdapterTest {
             Assertions.assertEquals("Username joao já está sendo utilizado", exception.getValidations().get(1)[1]);
         }
     }
+
+    @Test
+    @DisplayName("Deve Atualizar Usuário com Sucesso")
+    void deveAtualizarUsuarioComSucesso() {
+
+        Mockito.when(repository.existsByUsername(Mockito.anyString())).thenReturn(true);
+        Mockito.when(repository.save(Mockito.any())).thenReturn(UsuarioEntity.builder().id(1L).username("joao").build());
+
+        final Usuario updated = adapter.update("joao", new Usuario());
+
+        Assertions.assertEquals(1L, updated.getId());
+        Assertions.assertEquals("joao", updated.getUsername());
+    }
+
+    @Test
+    @DisplayName("Deve Lançar Exceção ao tentar atualizar")
+    void deveLancarExcecaoAoTentarAtualizar() {
+
+        Mockito.when(repository.existsByUsername(Mockito.anyString())).thenReturn(false);
+
+        try {
+            adapter.update("joao", new Usuario());
+            Assertions.fail("Uma exceção deveria ser lançada aqui");
+        } catch (Exception e) {
+
+            Assertions.assertTrue(e instanceof BusinessException);
+
+            final BusinessException exception = (BusinessException) e;
+            Assertions.assertEquals(HttpStatus.BAD_REQUEST, exception.getHttpStatus());
+            Assertions.assertEquals("Não existe usuário com username informado", exception.getMessage());
+        }
+    }
 }

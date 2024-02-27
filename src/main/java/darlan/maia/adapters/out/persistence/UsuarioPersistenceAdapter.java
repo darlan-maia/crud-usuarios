@@ -57,12 +57,23 @@ public class UsuarioPersistenceAdapter implements UsuarioOutputPort {
     }
 
     @Override
-    public Usuario update(String username, Usuario usuario) {
-        return null;
+    public Usuario update(final String username, final Usuario usuario) {
+
+        if (!repository.existsByUsername(username)) {
+            throw BusinessException.builder()
+                    .httpStatus(HttpStatus.BAD_REQUEST)
+                    .message("Não existe usuário com username informado")
+                    .build();
+        }
+
+        final UsuarioEntity entity = UsuarioPersistenceMapper.toEntity(usuario);
+        final UsuarioEntity updated = repository.save(entity);
+
+        return UsuarioPersistenceMapper.toDomain(updated);
     }
 
     @Override
-    public void delete(String username) {
+    public void delete(final String username) {
 
     }
 }

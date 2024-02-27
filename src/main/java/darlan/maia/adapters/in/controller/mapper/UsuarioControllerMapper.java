@@ -3,6 +3,7 @@ package darlan.maia.adapters.in.controller.mapper;
 import darlan.maia.adapters.in.controller.dto.TelefoneDTO;
 import darlan.maia.adapters.in.controller.dto.UsuarioRequestDTO;
 import darlan.maia.adapters.in.controller.dto.UsuarioResponseDTO;
+import darlan.maia.adapters.in.controller.dto.UsuarioUpdateRequestDTO;
 import darlan.maia.domain.model.Telefone;
 import darlan.maia.domain.model.Usuario;
 
@@ -10,7 +11,7 @@ public final class UsuarioControllerMapper {
 
     private UsuarioControllerMapper() { }
 
-    private static TelefoneDTO toDTO(Telefone telefone) {
+    private static TelefoneDTO toDTO(final Telefone telefone) {
 
         if (telefone == null) return null;
 
@@ -20,7 +21,7 @@ public final class UsuarioControllerMapper {
                 .build();
     }
 
-    public static UsuarioResponseDTO toDTO(Usuario usuario) {
+    public static UsuarioResponseDTO toDTO(final Usuario usuario) {
 
         if (usuario == null) return null;
 
@@ -32,7 +33,7 @@ public final class UsuarioControllerMapper {
                 .build();
     }
 
-    public static Telefone toDomain(TelefoneDTO telefone) {
+    public static Telefone toDomain(final TelefoneDTO telefone) {
 
         if (telefone == null) return null;
 
@@ -42,7 +43,7 @@ public final class UsuarioControllerMapper {
                 .build();
     }
 
-    public static Usuario toDomain(UsuarioRequestDTO request) {
+    public static Usuario toDomain(final UsuarioRequestDTO request) {
 
         if (request == null) return null;
 
@@ -55,4 +56,18 @@ public final class UsuarioControllerMapper {
                 .telefones(request.getTelefones().stream().map(UsuarioControllerMapper::toDomain).toList())
                 .build();
     }
+
+    public static Usuario toDomain(final UsuarioUpdateRequestDTO request) {
+
+        if (request == null) return null;
+
+        return Usuario.builder()
+                .password(request.getPassword())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .email(request.getEmail())
+                .telefones(request.getTelefones().stream().map(UsuarioControllerMapper::toDomain).toList())
+                .build();
+    }
+
 }

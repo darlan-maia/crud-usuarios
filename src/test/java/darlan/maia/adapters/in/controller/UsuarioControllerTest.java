@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class UsuarioControllerTest {
@@ -175,5 +176,78 @@ class UsuarioControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.validations[0].descricao").value("Campo obrigatório"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.validations[1].campo").value("password"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.validations[1].descricao").value("Campo deve conter, no mínimo, oito caracteres"));
+    }
+
+    @Test
+    @DisplayName("Sucesso - PUT/api/v1/{username}")
+    void deveAtualizarUsuarioComSucesso() throws Exception {
+
+        final String requestBody = """
+                {
+                    "password" : "nova_senha",
+                    "first_name" : "João",
+                    "last_name" : "Silva",
+                    "email" : "joao_silva@email.com",
+                    "telefones" : []
+                }
+                """;
+
+        final Usuario updated = Usuario.builder()
+                .id(1L)
+                .username("joao123")
+                .password("encoded")
+                .firstName("João")
+                .lastName("Silva")
+                .email("joao_silva@email.com")
+                .telefones(new ArrayList<>())
+                .build();
+
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .put("/api/v1/joao123")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        Mockito.when(service.update(Mockito.anyString(), Mockito.any())).thenReturn(updated);
+
+        mockMvc
+                .perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.username").value("joao123"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.full_name").value("João Silva"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value("joao_silva@email.com"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.telefone").doesNotExist());
+    }
+
+    @Test
+    @DisplayName("Falha na validação de campos")
+    void deveFalharAoPassarCamposInvalidos() throws Exception {
+
+        final String requestBody = """
+                {
+                    "password" : "nova_senha",
+                    "first_name" : "João",
+                    "last_name" : "Silva",
+                    "email" : "joao_silva",
+                    "telefones" : []
+                }
+                """;
+
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .put("/api/v1/joao123")
+                .content(requestBody)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc
+                .perform(request)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.http_status").value("BAD_REQUEST"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.mensagem").value("Há erros de validação em alguns campos"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.validations").isArray())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.validations[0].campo").value("email"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.validations[0].descricao").value("E-mail inválido"));
     }
 }

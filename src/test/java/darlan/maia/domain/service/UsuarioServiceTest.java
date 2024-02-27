@@ -61,4 +61,24 @@ class UsuarioServiceTest {
         Assertions.assertEquals(usuario, saved);
     }
 
+    @Test
+    @DisplayName("Sucesso - Atualizar Usuário")
+    void deveAtualizarComSucesso() {
+
+        Mockito.when(encoderAdapter.encode(Mockito.anyString())).thenReturn("XYZ");
+
+        Mockito.when(persistenceAdapter.update(Mockito.anyString(), Mockito.any())).thenReturn(new Usuario());
+
+        final ArgumentCaptor<Usuario> captor = ArgumentCaptor.forClass(Usuario.class);
+
+        service.update("joao", Usuario.builder().password("123").build());
+
+        Mockito.verify(persistenceAdapter).update(Mockito.anyString(), captor.capture());
+
+        final Usuario value = captor.getValue();
+
+        Assertions.assertEquals("joao", value.getUsername());
+        Assertions.assertEquals("XYZ", value.getPassword());
+    }
+
 }

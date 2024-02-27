@@ -14,24 +14,30 @@ public class UsuarioService implements UsuarioInputPort {
     private final PasswordEncoderOutputPort encoder;
 
     @Override
-    public Usuario findByUsername(String username) {
+    public Usuario findByUsername(final String username) {
         return adapter.findByUsername(username);
     }
 
     @Override
-    public Usuario save(Usuario usuario) {
+    public Usuario save(final Usuario usuario) {
         final String encoded = encoder.encode(usuario.getPassword());
         usuario.setPassword(encoded);
         return adapter.save(usuario);
     }
 
     @Override
-    public Usuario update(String username, Usuario usuario) {
-        return null;
+    public Usuario update(final String username, final Usuario usuario) {
+
+        final String encoded = encoder.encode(usuario.getPassword());
+
+        usuario.setUsername(username);
+        usuario.setPassword(encoded);
+
+        return adapter.update(username, usuario);
     }
 
     @Override
-    public void delete(String username) {
+    public void delete(final String username) {
 
     }
 }

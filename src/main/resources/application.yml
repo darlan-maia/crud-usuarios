@@ -1,3 +1,7 @@
+application:
+  title: CRUD de Usuário na Arquitetura Hexagonal
+  version: 1.0-SNAPSHOT
+
 spring:
   h2:
     console:
@@ -10,3 +14,5 @@ spring:
     password:
     jpa:
       database-platform: org.hibername.dialect.H2Dialect
+  jpa:
+    defer-datasource-initialization: true

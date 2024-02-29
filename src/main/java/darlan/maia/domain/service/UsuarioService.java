@@ -38,6 +38,6 @@ public class UsuarioService implements UsuarioInputPort {
 
     @Override
     public void delete(final String username) {
-
+        adapter.delete(username);
     }
 }

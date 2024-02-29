@@ -75,5 +75,13 @@ public class UsuarioPersistenceAdapter implements UsuarioOutputPort {
     @Override
     public void delete(final String username) {
 
+        final Supplier<BusinessException> supplier = () -> BusinessException.builder()
+                .message("Usuário com username %s não foi encontrado".formatted(username))
+                .httpStatus(HttpStatus.NOT_FOUND)
+                .build();
+
+        final UsuarioEntity entity = repository.findByUsername(username).orElseThrow(supplier);
+
+        repository.delete(entity);
     }
 }

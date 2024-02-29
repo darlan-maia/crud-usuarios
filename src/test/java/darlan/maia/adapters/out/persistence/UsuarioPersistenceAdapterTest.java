@@ -8,10 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
@@ -131,6 +128,46 @@ class UsuarioPersistenceAdapterTest {
             final BusinessException exception = (BusinessException) e;
             Assertions.assertEquals(HttpStatus.BAD_REQUEST, exception.getHttpStatus());
             Assertions.assertEquals("Não existe usuário com username informado", exception.getMessage());
+        }
+    }
+
+    @Test
+    @DisplayName("Deve Excluir usuário com sucesso")
+    void deveExcluirUsuarioComSucesso() {
+
+        final UsuarioEntity entity = UsuarioEntity.builder().username("joao").build();
+
+        Mockito.when(repository.findByUsername(Mockito.anyString())).thenReturn(Optional.of(entity));
+
+        Mockito.doNothing().when(repository).delete(Mockito.any());
+
+        final ArgumentCaptor<UsuarioEntity> captor = ArgumentCaptor.forClass(UsuarioEntity.class);
+
+        adapter.delete("joao");
+
+        Mockito.verify(repository).delete(captor.capture());
+
+        final UsuarioEntity value = captor.getValue();
+
+        Assertions.assertEquals("joao", value.getUsername());
+    }
+
+    @Test
+    @DisplayName("Deve Lançar Exceção ao tentar excluir usuário")
+    void deveLancarExcecaoAoTentarExcluirUsuario() {
+
+        Mockito.when(repository.findByUsername(Mockito.anyString())).thenReturn(Optional.empty());
+
+        try {
+            adapter.delete("joao");
+            Assertions.fail("Uma exceção deveria ser lançada aqui");
+        } catch (final Exception e) {
+
+            Assertions.assertTrue(e instanceof BusinessException);
+
+            final BusinessException exception = (BusinessException) e;
+            Assertions.assertEquals("Usuário com username joao não foi encontrado", exception.getMessage());
+            Assertions.assertEquals(HttpStatus.NOT_FOUND, exception.getHttpStatus());
         }
     }
 }

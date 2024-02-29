@@ -81,4 +81,21 @@ class UsuarioServiceTest {
         Assertions.assertEquals("XYZ", value.getPassword());
     }
 
+    @Test
+    @DisplayName("SUcesso - Deve excluir com sucesso")
+    void deveExcluirComSucesso() {
+
+        Mockito.doNothing().when(persistenceAdapter).delete(Mockito.anyString());
+
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+
+        service.delete("joao");
+
+        Mockito.verify(persistenceAdapter).delete(captor.capture());
+
+        final String value = captor.getValue();
+
+        Assertions.assertEquals("joao", value);
+    }
+
 }

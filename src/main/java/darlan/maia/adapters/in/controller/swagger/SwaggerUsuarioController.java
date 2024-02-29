@@ -138,4 +138,22 @@ public interface SwaggerUsuarioController {
             @Parameter(in = ParameterIn.PATH) String username,
             UsuarioUpdateRequestDTO request
     );
+
+    @Operation(
+            summary = "Remove um usuário",
+            description = "Exclui um usuário correspondente ao username informado"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "Usuário removido com sucesso",
+                    content = @Content(schema = @Schema())
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Usuário não encontrado",
+                    content = @Content(schema = @Schema(implementation = ApiErroResponse.class))
+            )
+    })
+    ResponseEntity<Void> delete(@Parameter(in = ParameterIn.PATH) String username);
 }

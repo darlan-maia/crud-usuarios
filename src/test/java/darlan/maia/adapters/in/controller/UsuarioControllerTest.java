@@ -250,4 +250,18 @@ class UsuarioControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.validations[0].campo").value("email"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.validations[0].descricao").value("E-mail inválido"));
     }
+
+    @Test
+    @DisplayName("Deve excluir usuário com sucesso")
+    void deveExcluirUsuarioComSucesso() throws Exception {
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/api/v1/joao");
+
+        mockMvc
+                .perform(requestBuilder)
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isNoContent())
+                .andExpect(MockMvcResultMatchers.jsonPath("$").doesNotExist());
+    }
+
 }

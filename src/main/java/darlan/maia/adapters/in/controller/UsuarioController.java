@@ -45,4 +45,11 @@ public class UsuarioController implements SwaggerUsuarioController {
         final Usuario updated = service.update(username, usuario);
         return ResponseEntity.ok().body(UsuarioControllerMapper.toDTO(updated));
     }
+
+    @Override
+    @DeleteMapping("/{username}")
+    public ResponseEntity<Void> delete(final @PathVariable("username") String username) {
+        service.delete(username);
+        return ResponseEntity.noContent().build();
+    }
 }

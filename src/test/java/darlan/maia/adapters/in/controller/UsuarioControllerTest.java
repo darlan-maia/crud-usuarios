@@ -172,10 +172,10 @@ class UsuarioControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.http_status").value("BAD_REQUEST"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.mensagem").value("Há erros de validação em alguns campos"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.validations").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.validations[0].campo").value("username"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.validations[0].descricao").value("Campo obrigatório"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.validations[1].campo").value("password"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.validations[1].descricao").value("Campo deve conter, no mínimo, oito caracteres"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.validations[0].campo").value("password"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.validations[0].descricao").value("Campo deve conter, no mínimo, oito caracteres"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.validations[1].campo").value("username"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.validations[1].descricao").value("Campo obrigatório"));
     }
 
     @Test

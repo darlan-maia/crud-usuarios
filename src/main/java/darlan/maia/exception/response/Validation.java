@@ -1,4 +1,4 @@
-package darlan.maia.model.dto;
+package darlan.maia.exception.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-//@NoArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
-public class UsuarioRequestDTO {
+public class Validation {
+    private String campo;
+    private String descricao;
 }

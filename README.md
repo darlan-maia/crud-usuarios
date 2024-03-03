@@ -7,7 +7,7 @@
 
 Este repositório aborda dois tipos de arquitetura em microsserviços: 
 - <font color="red">**Arquitetura Hexagonal**</font>
-- Padrão <font color="red">**Controller-Service-Repository**</font> <font color="FF0084">&lArr;&lArr;</font>
+- Padrão <font color="red">**Controller-Service-Repository**</font>
 
 Você está na branch <font color="blue">**CSR**</font>, portanto, o código exibido na tela foi desenvolvido seguindo 
 especificações de <font color="red">**Controller-Service-Repository**</font>. Caso queira visualizar o código desta API

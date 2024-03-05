@@ -3,6 +3,7 @@ package darlan.maia.controller;
 import darlan.maia.controller.swagger.SwaggerUsuarioController;
 import darlan.maia.model.dto.UsuarioRequestDTO;
 import darlan.maia.model.dto.UsuarioResponseDTO;
+import darlan.maia.model.dto.UsuarioUpdateRequestDTO;
 import darlan.maia.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,4 +33,22 @@ public class UsuarioController implements SwaggerUsuarioController {
 
         return ResponseEntity.created(uri).body(service.salvar(request));
     }
+
+    @Override
+    @PutMapping("/{username}")
+    public ResponseEntity<UsuarioResponseDTO> update(
+            final @PathVariable("username") String username,
+            final @Valid @RequestBody UsuarioUpdateRequestDTO request
+    ) {
+        return ResponseEntity.ok().body(service.update(username, request));
+    }
+
+    @Override
+    @DeleteMapping("/{username}")
+    public ResponseEntity<Void> delete(final @PathVariable("username") String username) {
+        service.delete(username);
+        return ResponseEntity.noContent().build();
+    }
+
+
 }

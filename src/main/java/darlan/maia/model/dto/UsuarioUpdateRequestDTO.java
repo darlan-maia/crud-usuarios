@@ -3,7 +3,6 @@ package darlan.maia.model.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -20,24 +19,18 @@ import java.util.List;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class UsuarioRequestDTO {
-
-    @NotBlank
-    @Size(min = 3)
-    @Schema(example = "joao123")
-    private String username;
+public class UsuarioUpdateRequestDTO {
 
     @NotBlank
     @Size(min = 8)
-    @Schema(example = "12345678")
     private String password;
 
     @NotBlank
-    @Schema(example = "João")
+    @Size(min = 3)
     private String firstName;
 
     @NotBlank
-    @Schema(example = "Silva")
+    @Size(min = 2)
     private String lastName;
 
     @Email
